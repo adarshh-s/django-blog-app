@@ -98,7 +98,10 @@ Inkwell{% endblock %} {% block content %}
 <script>
   function openDeleteModal(pk, title) {
     document.getElementById("modalTitle").textContent = '"' + title + '"';
-    document.getElementById("deleteForm").action = "/blogs/" + pk + "/delete/";
+
+    let url = "{% url 'delete_post' 0 %}".replace("0", pk);
+    document.getElementById("deleteForm").action = url;
+
     document
       .getElementById("deleteModal")
       .classList.add("modal-overlay--visible");

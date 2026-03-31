@@ -38,6 +38,8 @@ def update_blog(request, pk):
 
 
 def remove_post(request, pk):
-    blog = Post.objects.get(pk=pk)
-    blog.delete()
-    redirect('/')
+    blog = get_object_or_404(Post, pk=pk)
+
+    if request.method == 'POST':
+        blog.delete()
+        return redirect('blog_list')
