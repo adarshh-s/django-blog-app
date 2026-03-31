@@ -1,0 +1,95 @@
+{% extends 'base.html' %} {% load static %} {% block title %}{% if blog %}Edit
+Post{% else %}New Post{% endif %} — Inkwell{% endblock %} {% block content %}
+<div class="page-container page-container--narrow">
+  <div class="detail-back">
+    <a href="{% url 'blog_list' %}" class="back-link">← All Posts</a>
+  </div>
+
+  <div class="form-header">
+    <p class="form-header__eyebrow">
+      {% if blog %}Editing{% else %}New post{% endif %}
+    </p>
+    <h1 class="form-header__title">
+      {% if blog %}Update your post{% else %}Write something{% endif %}
+    </h1>
+  </div>
+
+  <form method="post" class="blog-form" novalidate>
+    {% csrf_token %}
+
+    <!-- Title Field -->
+    <div
+      class="form-group {% if form.title.errors %}form-group--error{% endif %}"
+    >
+      <label class="form-label" for="{{ form.title.id_for_label }}"
+        >Title</label
+      >
+      <input
+        type="text"
+        id="{{ form.title.id_for_label }}"
+        name="{{ form.title.html_name }}"
+        value="{{ form.title.value|default:'' }}"
+        class="form-input form-input--title"
+        placeholder="Give your post a title..."
+        autocomplete="off"
+      />
+      {% if form.title.errors %}
+      <p class="form-error">{{ form.title.errors.0 }}</p>
+      {% endif %}
+    </div>
+
+    <!-- Content Field -->
+    <div
+      class="form-group {% if form.content.errors %}form-group--error{% endif %}"
+    >
+      <label class="form-label" for="{{ form.content.id_for_label }}"
+        >Content</label
+      >
+      <textarea
+        id="{{ form.content.id_for_label }}"
+        name="{{ form.content.html_name }}"
+        class="form-textarea"
+        placeholder="Start writing..."
+        rows="16"
+      >
+{{ form.content.value|default:'' }}</textarea
+      >
+      {% if form.content.errors %}
+      <p class="form-error">{{ form.content.errors.0 }}</p>
+      {% endif %}
+    </div>
+
+    <!-- Non-field errors -->
+    {% if form.non_field_errors %}
+    <div class="form-non-field-errors">
+      {% for error in form.non_field_errors %}
+      <p class="form-error">{{ error }}</p>
+      {% endfor %}
+    </div>
+    {% endif %}
+
+    <div class="form-actions">
+      <a
+        href="{% if blog %}{% url 'blog_detail' blog.pk %}{% else %}{% url 'blog_list' %}{% endif %}"
+        class="btn btn--ghost"
+      >
+        Cancel
+      </a>
+      <button type="submit" class="btn btn--primary">
+        {% if blog %}Save Changes{% else %}Publish Post{% endif %}
+      </button>
+    </div>
+  </form>
+</div>
+{% endblock %} {% block extra_js %}
+<script>
+  // Auto-grow textarea
+  const textarea = document.querySelector(".form-textarea");
+  if (textarea) {
+    textarea.addEventListener("input", function () {
+      this.style.height = "auto";
+      this.style.height = this.scrollHeight + "px";
+    });
+  }
+</script>
+{% endblock %}

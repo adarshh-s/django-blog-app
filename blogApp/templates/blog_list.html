@@ -64,6 +64,9 @@ Inkwell{% endblock %} {% block content %}
   </div>
   {% else %}
   <div class="empty-state">
+    <a href="{% url 'blog_create' %}" class="btn btn--primary"
+      >Write something</a
+    >
     <div class="empty-state__icon">✦</div>
     <p class="empty-state__title">Nothing here yet</p>
     <p class="empty-state__sub">Start writing your first post.</p>
