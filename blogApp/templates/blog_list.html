@@ -1,0 +1,108 @@
+{% extends 'base.html' %} {% load static %} {% block title %}All Posts —
+Inkwell{% endblock %} {% block content %}
+<div class="page-container">
+  <!-- Hero -->
+  <section class="list-hero">
+    <p class="list-hero__eyebrow">Your writing</p>
+    <h1 class="list-hero__title">All Posts</h1>
+    <p class="list-hero__count">
+      {{ blogs.count }} post{{ blogs.count|pluralize }}
+    </p>
+  </section>
+
+  <!-- Filter Bar -->
+  <div class="filter-bar">
+    <span class="filter-bar__label">Sort by</span>
+    <div class="filter-tabs">
+      <a
+        href="?sort=newest"
+        class="filter-tab {% if request.GET.sort == 'newest' or not request.GET.sort %}filter-tab--active{% endif %}"
+      >
+        Newest
+      </a>
+      <a
+        href="?sort=oldest"
+        class="filter-tab {% if request.GET.sort == 'oldest' %}filter-tab--active{% endif %}"
+      >
+        Oldest
+      </a>
+      <a
+        href="?sort=updated"
+        class="filter-tab {% if request.GET.sort == 'updated' %}filter-tab--active{% endif %}"
+      >
+        Recently Updated
+      </a>
+    </div>
+  </div>
+
+  <!-- Blog Grid -->
+  {% if blogs %}
+  <div class="blog-grid">
+    {% for blog in blogs %}
+    <article class="blog-card">
+      <div class="blog-card__meta">
+        <time class="blog-card__date">{{ blog.created_at|date:"M d, Y" }}</time>
+        {% if blog.updated_at != blog.created_at %}
+        <span class="blog-card__updated">Updated</span>
+        {% endif %}
+      </div>
+      <h2 class="blog-card__title">{{ blog.title }}</h2>
+      <p class="blog-card__excerpt">{{ blog.content|truncatewords:20 }}</p>
+      <div class="blog-card__actions">
+        <button
+          class="btn btn--danger btn--sm"
+          onclick="openDeleteModal('{{ blog.pk }}', '{{ blog.title|escapejs }}')"
+        >
+          Delete
+        </button>
+      </div>
+    </article>
+    {% endfor %}
+  </div>
+  {% else %}
+  <div class="empty-state">
+    <div class="empty-state__icon">✦</div>
+    <p class="empty-state__title">Nothing here yet</p>
+    <p class="empty-state__sub">Start writing your first post.</p>
+  </div>
+  {% endif %}
+</div>
+
+<!-- Delete Confirmation Modal -->
+<div class="modal-overlay" id="deleteModal">
+  <div class="modal">
+    <p class="modal__eyebrow">Confirm delete</p>
+    <h3 class="modal__title" id="modalTitle"></h3>
+    <p class="modal__body">This action cannot be undone.</p>
+    <div class="modal__actions">
+      <button class="btn btn--ghost" onclick="closeDeleteModal()">
+        Cancel
+      </button>
+      <form id="deleteForm" method="post" action="">
+        {% csrf_token %}
+        <button type="submit" class="btn btn--danger">Delete</button>
+      </form>
+    </div>
+  </div>
+</div>
+{% endblock %} {% block extra_js %}
+<script>
+  function openDeleteModal(pk, title) {
+    document.getElementById("modalTitle").textContent = '"' + title + '"';
+    document.getElementById("deleteForm").action = "/blogs/" + pk + "/delete/";
+    document
+      .getElementById("deleteModal")
+      .classList.add("modal-overlay--visible");
+  }
+  function closeDeleteModal() {
+    document
+      .getElementById("deleteModal")
+      .classList.remove("modal-overlay--visible");
+  }
+  document
+    .getElementById("deleteModal")
+    .addEventListener("click", function (e) {
+      if (e.target === this) closeDeleteModal();
+    });
+</script>
+{% endblock %}
