@@ -1,0 +1,75 @@
+{% extends 'base.html' %} {% load static %} {% block title %}{{ blog.title }} —
+Inkwell{% endblock %} {% block content %}
+<div class="page-container page-container--narrow">
+  <div class="detail-back">
+    <a href="{% url 'blog_list' %}" class="back-link">← All Posts</a>
+  </div>
+
+  <article class="detail-article">
+    <header class="detail-header">
+      <div class="detail-meta">
+        <time class="detail-date">{{ blog.created_at|date:"F d, Y" }}</time>
+        {% if blog.updated_at != blog.created_at %}
+        <span class="detail-separator">·</span>
+        <span class="detail-updated"
+          >Edited {{ blog.updated_at|date:"M d, Y" }}</span
+        >
+        {% endif %}
+      </div>
+      <h1 class="detail-title">{{ blog.title }}</h1>
+      <div class="detail-rule"></div>
+    </header>
+
+    <div class="detail-content">{{ blog.content|linebreaks }}</div>
+
+    <footer class="detail-footer">
+      <div class="detail-footer__actions">
+        <button
+          class="btn btn--danger"
+          onclick="openDeleteModal('{{ blog.pk }}', '{{ blog.title|escapejs }}')"
+        >
+          Delete
+        </button>
+      </div>
+    </footer>
+  </article>
+</div>
+
+<!-- Delete Confirmation Modal -->
+<div class="modal-overlay" id="deleteModal">
+  <div class="modal">
+    <p class="modal__eyebrow">Confirm delete</p>
+    <h3 class="modal__title" id="modalTitle"></h3>
+    <p class="modal__body">This action cannot be undone.</p>
+    <div class="modal__actions">
+      <button class="btn btn--ghost" onclick="closeDeleteModal()">
+        Cancel
+      </button>
+      <form id="deleteForm" method="post" action="">
+        {% csrf_token %}
+        <button type="submit" class="btn btn--danger">Delete</button>
+      </form>
+    </div>
+  </div>
+</div>
+{% endblock %} {% block extra_js %}
+<script>
+  function openDeleteModal(pk, title) {
+    document.getElementById("modalTitle").textContent = '"' + title + '"';
+    document.getElementById("deleteForm").action = "/blogs/" + pk + "/delete/";
+    document
+      .getElementById("deleteModal")
+      .classList.add("modal-overlay--visible");
+  }
+  function closeDeleteModal() {
+    document
+      .getElementById("deleteModal")
+      .classList.remove("modal-overlay--visible");
+  }
+  document
+    .getElementById("deleteModal")
+    .addEventListener("click", function (e) {
+      if (e.target === this) closeDeleteModal();
+    });
+</script>
+{% endblock %}
