@@ -52,6 +52,9 @@ Inkwell{% endblock %} {% block content %}
         <a href="{% url 'blog_detail' blog.pk %}" class="btn btn--ghost btn--sm"
           >Read</a
         >
+        <a href="{% url 'blog_update' blog.pk %}" class="btn btn--ghost btn--sm"
+          >Edit</a
+        >
         <button
           class="btn btn--danger btn--sm"
           onclick="openDeleteModal('{{ blog.pk }}', '{{ blog.title|escapejs }}')"
