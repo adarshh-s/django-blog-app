@@ -14,6 +14,8 @@ def list_blogs(request):
         blogs = blogs.order_by('created_at')
     elif sort == 'updated':
         blogs = blogs.order_by('-updated_at')
+    else:
+        blogs = blogs.order_by('-created_at')
     return render(request, 'blog_list.html', {'blogs': blogs})
 
 
