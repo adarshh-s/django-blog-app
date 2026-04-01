@@ -7,6 +7,13 @@ from .forms import BlogForm
 
 def list_blogs(request):
     blogs = Post.objects.all()
+    sort = request.GET.get('sort')
+    if sort == 'newest':
+        blogs = blogs.order_by('-created_at')
+    elif sort == 'oldest':
+        blogs = blogs.order_by('created_at')
+    elif sort == 'updated':
+        blogs = blogs.order_by('-updated_at')
     return render(request, 'blog_list.html', {'blogs': blogs})
 
 
